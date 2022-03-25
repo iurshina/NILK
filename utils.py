@@ -2,7 +2,7 @@ import os
 import gzip
 import json
 
-DIR = "../chengxi/data_process/entities_json_data/"
+DIR = "../../chengxi/data_process/entities_json_data/"
 
 
 def get_entities_with_wikilink():
