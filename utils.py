@@ -11,6 +11,7 @@ def get_entities_with_wikilink():
             with gzip.open(DIR + file, 'rt') as f, open("entites_with_links.tsv", 'w') as el:
                 print(DIR + file)
                 for line in f:
+                    print("Line: " + line)
                     line = line[:-2]  # remove comma from the end of the line (,\n)
                     j_content = json.loads(line)
                     if j_content["wiki_sitelink"] is not None:
