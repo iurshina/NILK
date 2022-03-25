@@ -9,6 +9,7 @@ def get_entities_with_wikilink():
     for file in os.listdir(DIR):
         if file.startswith("till_"):
             with gzip.open(DIR + file, 'r') as f, open("entites_with_links.tsv", 'w') as el:
+                print(DIR + file)
                 for line in f:
                     line = line[:-2]  # remove comma from the end of the line (,\n)
                     j_content = json.loads(line)
