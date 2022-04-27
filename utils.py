@@ -1,6 +1,8 @@
 import os
 import gzip
 import json
+import traceback
+
 
 DIR = "../../chengxi/data_process/entities_json_data/"
 
@@ -15,7 +17,11 @@ def get_entities_with_wikilink():
                         continue
                     # print("Line: " + line)
                     line = line[:-2]  # remove comma from the end of the line (,\n)
-                    j_content = json.loads(line)
+                    try:
+                        j_content = json.loads(line)
+                    except Exception:
+                        traceback.print_exc()
+                        continue
                     if j_content["wiki_sitelink"] is not None:
                         el.write(j_content["id"] + "\t" + j_content["wiki_sitelink"] + "\n")
 
