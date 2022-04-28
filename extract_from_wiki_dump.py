@@ -64,6 +64,9 @@ def segment(page_xml, mapping=None):
 
     text = elem.find(text_path).text
 
+    if text is None or len(text) == 0:
+        return []
+
     filtered = filter_wiki(text, promote_remaining=False, simplify_links=False)
 
     mentions = []
@@ -105,7 +108,7 @@ def extract_mentions(links_file, wiki_dump, workers):
                 for mention in mentions:
                     mention_span, context, offset, wikidata_id = mention
 
-                    mention = {"offset": offset, "length": len(mention_span), "context": context,
+                    mention = {"mention": mention_span, "offset": offset, "length": len(mention_span), "context": context,
                                "wikidata_id": wikidata_id, "nil": True}
 
                     yield mention
