@@ -20,6 +20,7 @@ import gensim.utils
 import re, json
 from functools import partial
 import multiprocessing
+import argparse
 
 from xml.etree import ElementTree
 
@@ -74,7 +75,7 @@ def segment(page_xml, mapping=None):
         if mention_span in mapping.keys():
             # take 500 character on each side... #todo: ???
             left_context = filtered[max(0, start - 500):start]
-            right_context = filtered[min(end + 500, len(filtered))]
+            right_context = filtered[end:min(end + 500, len(filtered))]
             left_context = remove_markup(left_context)
             right_context = remove_markup(right_context)
 
@@ -87,15 +88,15 @@ def segment(page_xml, mapping=None):
     return mentions
 
 
-def extract_mentions():
+def extract_mentions(links_file, wiki_dump, workers):
     mapping = {}
-    with open("nil_entities_with_links.tsv") as f:
+    with open(links_file) as f:
         for l in f:
             parts = l.split("\t")
             mapping[parts[1].lower().replace("\n", "")] = parts[0]
 
-    processes = 4
-    with gensim.utils.open("enwiki-20170220-pages-articles.xml.bz2", 'rb') as xml_fileobj:
+    processes = workers
+    with gensim.utils.open(wiki_dump, 'rb') as xml_fileobj:
         page_xmls = extract_page_xmls(xml_fileobj)
         pool = multiprocessing.Pool(processes)
 
@@ -113,12 +114,25 @@ def extract_mentions():
 
 
 if __name__ == '__main__':
-    outfile = gensim.utils.open("nil_mentions.json", 'wb')
+    parser = argparse.ArgumentParser()
+    default_workers = max(1, multiprocessing.cpu_count() - 1)
+    parser.add_argument('-m', '--mapping', default="nil_mentions.json")
+    parser.add_argument('-f', '--file', help='Path to MediaWiki database dump (read-only).',
+                        default="enwiki-20170220-pages-articles.xml.bz2")
+    parser.add_argument(
+        '-o', '--output',
+        help='Path to output file (stdout if not specified). If ends in .gz or .bz2, '
+             'the output file will be automatically compressed (recommended!).',
+        default="nil_mentions.json")
 
-    mentions_stream = extract_mentions()
+    args = parser.parse_args()
+
+    outfile = gensim.utils.open(args.output, 'wb')
+
+    mentions_stream = extract_mentions(args.mapping, args.file, default_workers)
 
     for idx, mention in enumerate(mentions_stream):
         mention["id"] = idx
 
-        outfile.write((json.dumps(mention) + "\n"))
+        outfile.write((json.dumps(mention) + "\n").encode('utf-8'))
 
