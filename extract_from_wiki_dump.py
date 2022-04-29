@@ -1,9 +1,12 @@
+# based on: https://github.com/RaRe-Technologies/gensim/blob/develop/gensim/scripts/segment_wiki.py
+
 # JSON of mentions file
 # {[{
 # mention_id: 1,
 # context: "Lalal",
 # offset: 12,
 # length: 10,
+# wikipedia_page_id: ...,
 # new_wikidata_id: Q19302, # for disambiguation
 # nil: True
 # }]}
@@ -61,8 +64,10 @@ def segment(page_xml, mapping=None):
     namespace = get_namespace(elem.tag)
     ns_mapping = {"ns": namespace}
     text_path = "./{%(ns)s}revision/{%(ns)s}text" % ns_mapping
+    pageid_path = "./{%(ns)s}id" % ns_mapping
 
     text = elem.find(text_path).text
+    pageid = elem.find(pageid_path).text
 
     if text is None or len(text) == 0:
         return []
@@ -86,7 +91,7 @@ def segment(page_xml, mapping=None):
                 continue
 
             mentions.append((mention_span, left_context + mention_span + right_context, len(left_context),
-                             mapping[mention_span.lower()]))
+                             pageid, mapping[mention_span.lower()], True))  # todo: is_nil todo
 
     return mentions
 
@@ -106,10 +111,10 @@ def extract_mentions(links_file, wiki_dump, workers):
         for group in utils.chunkize(page_xmls, chunksize=10 * processes, maxsize=1):
             for mentions in pool.imap(partial(segment, mapping=mapping), group):
                 for mention in mentions:
-                    mention_span, context, offset, wikidata_id = mention
+                    mention_span, context, offset, pageid, wikidata_id, is_nil = mention
 
                     mention = {"mention": mention_span, "offset": offset, "length": len(mention_span), "context": context,
-                               "wikidata_id": wikidata_id, "nil": True}
+                               "wikipedia_page_id": pageid, "wikidata_id": wikidata_id, "nil": is_nil}
 
                     yield mention
 
