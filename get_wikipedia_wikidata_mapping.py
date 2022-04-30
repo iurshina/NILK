@@ -26,7 +26,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
 
-    parser.add_argument('-wd', '--wikidata', default="")
+    parser.add_argument('-w', '--wikidata', default="")
 
     with open("wiki_wikidata_mapping.json", "w") as out:
         for id, sitelink, enwiki in get_mapping(args.wikidata):
