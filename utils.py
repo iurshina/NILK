@@ -16,7 +16,7 @@ def get_entities_with_wikilink():
                     if len(line) < 10:
                         continue
                     # print("Line: " + line)
-                    line = line[:-2]  # remove comma from the end of the line (,\n)
+                    line = line.replace(",\n", "").replace("]", "")  # remove comma from the end of the line (,\n)
                     try:
                         j_content = json.loads(line)
                     except Exception:
