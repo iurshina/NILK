@@ -14,12 +14,13 @@ def get_mapping(wikidata_path):
             else:
                 obj = json.loads(ln)
             id = obj["id"]
-            wikisite_link = obj["wiki_sitelink"]
-            enwiki = ""
+            enwiki = None
             if "sitelinks" in obj and "enwiki" in obj["sitelinks"]:
                 enwiki = obj["sitelinks"]["enwiki"]["title"]
+            if enwiki is None:
+                continue
 
-            yield id, wikisite_link, enwiki
+            yield id, enwiki
 
 
 if __name__ == '__main__':
@@ -30,5 +31,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     with open("wiki_wikidata_mapping.json", "w") as out:
-        for id, sitelink, enwiki in get_mapping(args.wikidata):
-            out.write(json.dumps({"id": id, "sitelink": sitelink, "enwiki": enwiki}))
+        for id, enwiki in get_mapping(args.wikidata):
+            out.write(json.dumps({"id": id, "enwiki": enwiki}))
