@@ -5,11 +5,11 @@ import json
 
 
 def get_mapping(wikidata_path):
-    with gzip.open(wikidata_path, 'r') as gf:
+    with gzip.open(wikidata_path, 'rb') as gf:
         for ln in gf:
-            if ln == '[\n' or ln == ']\n':
+            if ln == b'[\n' or ln == b']\n':
                 continue
-            if ln.endswith(',\n'):
+            if ln.endswith(b',\n'):
                 obj = json.loads(ln[:-2])
             else:
                 obj = json.loads(ln)
