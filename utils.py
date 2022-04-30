@@ -23,8 +23,11 @@ def get_entities_with_wikilink():
                         traceback.print_exc()
                         print("Error with this line: " + line)
                         continue
-                    if j_content["wiki_sitelink"] is not None and not j_content["wiki_sitelink"].startswith("Category:"):
-                        el.write(j_content["id"] + "\t" + j_content["wiki_sitelink"] + "\n")
+                    wikilink = j_content["wiki_sitelink"]
+                    if wikilink is not None and not wikilink.startswith("Category:")\
+                            and not wikilink.startswith("Wikipedia:") and not wikilink.startswith("Module:") \
+                            and not wikilink.startswith("Template:") and not wikilink.startswith("Portal:"):
+                        el.write(j_content["id"] + "\t" + wikilink + "\n")
 
 
 get_entities_with_wikilink()
