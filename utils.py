@@ -20,7 +20,8 @@ def get_entities_with_wikilink():
                     try:
                         j_content = json.loads(line)
                     except Exception:
-                        traceback.print_exc()
+                        # traceback.print_exc()
+                        print("Error with this line: " + line)
                         continue
                     if j_content["wiki_sitelink"] is not None:
                         el.write(j_content["id"] + "\t" + j_content["wiki_sitelink"] + "\n")
