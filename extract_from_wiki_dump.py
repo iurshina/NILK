@@ -7,16 +7,18 @@
 # offset: 12,
 # length: 10,
 # wikipedia_page_id: ...,
-# new_wikidata_id: Q19302, # for disambiguation
+# wikidata_id: Q19302, # for disambiguation
 # nil: True
 # }]}
 
-# add page id and code how to extract the whole pages?
+# add page id and code how to extract the whole pages by page id (probably find the tool)?
 
 # 1. Get NIL-metions file
+# 1.5 Get not-NIL mentions file while checking that they are not in NIL list (use mapping for 2017)
 # 2. Get All mentions file (nil and not nil for 2017 versions), delete the one from step 1
 
-# input: wiki-pages file enwiki-20170220-pages-articles.xml.bz2 and mapping between wikilinks and new wikidata
+# TIME: Thu evening started, Sat morning over 1,5 days...
+
 
 from gensim.corpora.wikicorpus import get_namespace, utils, RE_P16, filter_wiki, remove_markup
 import gensim.utils
@@ -60,7 +62,7 @@ def extract_page_xmls(f):
             elem.clear()
 
 
-def segment(page_xml, mapping=None):
+def segment(page_xml, mapping=None, nils=None):
     elem = ElementTree.fromstring(page_xml)
     namespace = get_namespace(elem.tag)
     ns_mapping = {"ns": namespace}
@@ -81,7 +83,8 @@ def segment(page_xml, mapping=None):
         end = m.regs[1][1]
         mention_span = filtered[start:end]
 
-        # [[a|b]] appears as "b" but links to page "a", thus: b
+        # [[a|b]] appears as "b" but links to page "a", thus: b https://en.wikipedia.org/wiki/Help:Link
+        # todo: more complicated cases?
         mention_span_parts = mention_span.split("|")
         if len(mention_span_parts) > 1:
             wikipedia_link = mention_span_parts[0]
@@ -90,7 +93,8 @@ def segment(page_xml, mapping=None):
             wikipedia_link = mention_span_parts[0]
             mention_span = mention_span_parts[0]
 
-        if wikipedia_link in mapping.keys():
+        is_nil = False
+        if wikipedia_link in nils.keys():
             # take 500 character on each side... #todo: ???
             left_context = filtered[max(0, start - 500):start]
             right_context = filtered[end:min(end + 500, len(filtered))]
@@ -101,17 +105,39 @@ def segment(page_xml, mapping=None):
                 continue
 
             mentions.append((mention_span, left_context + mention_span + right_context, len(left_context),
-                             pageid, mapping[wikipedia_link.lower()], True))  # todo: is_nil todo
+                             pageid, nils[wikipedia_link.lower()], True))
+            is_nil = True
+        if wikipedia_link in mapping.keys():
+            left_context = filtered[max(0, start - 500):start]
+            right_context = filtered[end:min(end + 500, len(filtered))]
+            left_context = remove_markup(left_context)
+            right_context = remove_markup(right_context)
+
+            if len(left_context) < 10 and len(right_context) < 10:
+                continue
+
+            wikidata_id = mapping[wikipedia_link.lower()]
+
+            mentions.append((mention_span, left_context + mention_span + right_context, len(left_context),
+                             pageid, wikidata_id, False))
+            if is_nil:
+                print("Error: an item is both in NILs and linked items: " + mention_span + ", " + wikidata_id)
 
     return mentions
 
 
-def extract_mentions(links_file, wiki_dump, workers):
-    mapping = {}
-    with open(links_file) as f:
+def extract_mentions(mapping, nils_file, wiki_dump, workers):
+    nils = {}
+    with open(nils_file) as f:
         for l in f:
             parts = l.split("\t")
-            mapping[parts[1].lower().replace("\n", "")] = parts[0]
+            nils[parts[1].lower().replace("\n", "")] = parts[0]
+
+    wikidata_to_wikipedia = {}
+    with open(mapping) as f:
+        for l in f:
+            parts = l.split("\t")
+            wikidata_to_wikipedia[parts[1].lower().replace("\n", "")] = parts[0]
 
     processes = workers
     with gensim.utils.open(wiki_dump, 'rb') as xml_fileobj:
@@ -119,7 +145,7 @@ def extract_mentions(links_file, wiki_dump, workers):
         pool = multiprocessing.Pool(processes)
 
         for group in utils.chunkize(page_xmls, chunksize=10 * processes, maxsize=1):
-            for mentions in pool.imap(partial(segment, mapping=mapping), group):
+            for mentions in pool.imap(partial(segment, mapping=wikidata_to_wikipedia, nils=nils), group):
                 for mention in mentions:
                     mention_span, context, offset, pageid, wikidata_id, is_nil = mention
 
@@ -134,7 +160,8 @@ def extract_mentions(links_file, wiki_dump, workers):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     default_workers = max(1, multiprocessing.cpu_count() - 1)
-    parser.add_argument('-m', '--mapping', default="nil_mentions.json")
+    parser.add_argument('-m', '--mapping', default="wiki_wikidata_mapping.json")
+    parser.add_argument("-n", "--nils", default="all_mentions.json")
     parser.add_argument('-f', '--file', help='Path to MediaWiki database dump (read-only).',
                         default="enwiki-20170220-pages-articles.xml.bz2")
     parser.add_argument(
@@ -147,7 +174,7 @@ if __name__ == '__main__':
 
     outfile = gensim.utils.open(args.output, 'wb')
 
-    mentions_stream = extract_mentions(args.mapping, args.file, default_workers)
+    mentions_stream = extract_mentions(args.mapping, args.nils, args.file, default_workers)
 
     for idx, mention in enumerate(mentions_stream):
         mention["id"] = idx
