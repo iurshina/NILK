@@ -20,7 +20,8 @@
 
 from gensim.corpora.wikicorpus import get_namespace, utils, RE_P16, filter_wiki, remove_markup
 import gensim.utils
-import re, json
+import re
+import json
 from functools import partial
 import multiprocessing
 import argparse
@@ -80,7 +81,16 @@ def segment(page_xml, mapping=None):
         end = m.regs[1][1]
         mention_span = filtered[start:end]
 
-        if mention_span in mapping.keys():
+        # [[a|b]] appears as "b" but links to page "a", thus: b
+        mention_span_parts = mention_span.split("|")
+        if len(mention_span_parts) > 1:
+            wikipedia_link = mention_span_parts[0]
+            mention_span = mention_span_parts[1]
+        else:
+            wikipedia_link = mention_span_parts[0]
+            mention_span = mention_span_parts[0]
+
+        if wikipedia_link in mapping.keys():
             # take 500 character on each side... #todo: ???
             left_context = filtered[max(0, start - 500):start]
             right_context = filtered[end:min(end + 500, len(filtered))]
@@ -91,7 +101,7 @@ def segment(page_xml, mapping=None):
                 continue
 
             mentions.append((mention_span, left_context + mention_span + right_context, len(left_context),
-                             pageid, mapping[mention_span.lower()], True))  # todo: is_nil todo
+                             pageid, mapping[wikipedia_link.lower()], True))  # todo: is_nil todo
 
     return mentions
 
