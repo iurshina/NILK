@@ -22,6 +22,7 @@ if __name__ == '__main__':
             old_ids.add(id)
 
     new_ids = set()
+    mmap = {}
     with open(args.new_wikidata_mapping) as f:
         for l in f:
             line = json.loads(l)
@@ -29,6 +30,7 @@ if __name__ == '__main__':
             enwiki = line["enwiki"]
 
             new_ids.add(id)
+            mmap[id] = enwiki
 
     nil_ids = new_ids - old_ids
 
@@ -36,4 +38,4 @@ if __name__ == '__main__':
 
     with open(args.output_file, "w") as f:
         for id in nil_ids:
-            f.write(id)
+            f.write(id + '\t' + mmap[id] + "\n")
