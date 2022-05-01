@@ -30,4 +30,19 @@ def get_entities_with_wikilink():
                         el.write(j_content["id"] + "\t" + wikilink + "\n")
 
 
-get_entities_with_wikilink()
+# get_entities_with_wikilink()
+
+# todo: tmp, remove
+def convert_():
+    with open("2021_minus_2027.txt") as f, open("2021_minus_2017_filtered.txt", "w") as of:
+        for l in f:
+            line = json.loads(l)
+            id = line["id"]
+            enwiki = line["enwiki"]
+
+            if enwiki.startswith("Category:") or enwiki.startswith("Wikipedia:") or enwiki.startswith("Module:") \
+                or enwiki.startswith("Template:") or enwiki.startswith("Portal:"):
+                continue
+            of.write(id + "\t" + enwiki + "\n")
+
+convert_()

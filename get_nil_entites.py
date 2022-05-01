@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     nil_ids = new_ids - old_ids
 
-    print("Number of NILs: " + str(len(new_ids)))
+    print("Number of NILs: " + str(len(nil_ids)))
 
     with open(args.output_file, "w") as f:
         for id in nil_ids:
