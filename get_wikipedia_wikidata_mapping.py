@@ -27,9 +27,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-w', '--wikidata', default="")
+    parser.add_argument('-o', '--output', default="wiki_wikidata_mapping.json")
 
     args = parser.parse_args()
 
-    with open("wiki_wikidata_mapping.json", "w") as out:
+    with open(args.output, "w") as out:
         for id, enwiki in get_mapping(args.wikidata):
             out.write(json.dumps({"id": id, "enwiki": enwiki}) + "\n")
