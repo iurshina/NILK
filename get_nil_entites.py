@@ -1,5 +1,6 @@
 # Compares two mappings: old and new, find the ones that are in the new but not old
 import argparse
+import json
 
 
 if __name__ == '__main__':
@@ -14,16 +15,20 @@ if __name__ == '__main__':
     old_ids = set()
     with open(args.old_wikidata_mapping) as f:
         for l in f:
-            parts = l.split("\t")
+            line = json.loads(l)
+            id = line["id"]
+            enwiki = line["enwiki"]
 
-            old_ids.add(parts[0])
+            old_ids.add(id)
 
     new_ids = set()
     with open(args.new_wikidata_mapping) as f:
         for l in f:
-            parts = l.split("\t")
+            line = json.loads(l)
+            id = line["id"]
+            enwiki = line["enwiki"]
 
-            new_ids.add(parts[0])
+            new_ids.add(id)
 
     nil_ids = new_ids - old_ids
 
