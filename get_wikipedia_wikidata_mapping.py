@@ -33,4 +33,4 @@ if __name__ == '__main__':
 
     with open(args.output, "w") as out:
         for id, enwiki in get_mapping(args.wikidata):
-            out.write(json.dumps({"id": id, "enwiki": enwiki}) + "\n")
+            out.write(id + "\t" + enwiki + "\n")

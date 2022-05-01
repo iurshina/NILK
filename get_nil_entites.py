@@ -31,7 +31,4 @@ if __name__ == '__main__':
 
     with open(args.output_file, "w") as f:
         for id in nil_ids:
-            f.write(id + "\n")
-
-
-
+            f.write(id)
