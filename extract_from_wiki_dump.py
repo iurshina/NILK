@@ -62,7 +62,7 @@ def extract_page_xmls(f):
             elem.clear()
 
 
-def segment(page_xml, mapping=None, nils=None):
+def segment(page_xml, nil_only=False, mapping=None, nils=None):
     elem = ElementTree.fromstring(page_xml)
     namespace = get_namespace(elem.tag)
     ns_mapping = {"ns": namespace}
@@ -107,7 +107,7 @@ def segment(page_xml, mapping=None, nils=None):
             mentions.append((mention_span, left_context + mention_span + right_context, len(left_context),
                              pageid, nils[wikipedia_link.lower()], True))
             is_nil = True
-        if wikipedia_link in mapping.keys():
+        if not nil_only and wikipedia_link in mapping.keys():
             left_context = filtered[max(0, start - 500):start]
             right_context = filtered[end:min(end + 500, len(filtered))]
             left_context = remove_markup(left_context)
@@ -126,7 +126,7 @@ def segment(page_xml, mapping=None, nils=None):
     return mentions
 
 
-def extract_mentions(mapping, nils_file, wiki_dump, workers):
+def extract_mentions(mapping, nils_file, wiki_dump, workers, nil_only=False):
     nils = {}
     with open(nils_file) as f:
         for l in f:
@@ -134,10 +134,11 @@ def extract_mentions(mapping, nils_file, wiki_dump, workers):
             nils[parts[1].lower().replace("\n", "")] = parts[0]
 
     wikidata_to_wikipedia = {}
-    with open(mapping) as f:
-        for l in f:
-            parts = l.split("\t")
-            wikidata_to_wikipedia[parts[1].lower().replace("\n", "")] = parts[0]
+    if not nil_only:
+        with open(mapping) as f:
+            for l in f:
+                parts = l.split("\t")
+                wikidata_to_wikipedia[parts[1].lower().replace("\n", "")] = parts[0]
 
     processes = workers
     with gensim.utils.open(wiki_dump, 'rb') as xml_fileobj:
@@ -145,7 +146,7 @@ def extract_mentions(mapping, nils_file, wiki_dump, workers):
         pool = multiprocessing.Pool(processes)
 
         for group in utils.chunkize(page_xmls, chunksize=10 * processes, maxsize=1):
-            for mentions in pool.imap(partial(segment, mapping=wikidata_to_wikipedia, nils=nils), group):
+            for mentions in pool.imap(partial(segment, nil_only=nil_only, mapping=wikidata_to_wikipedia, nils=nils), group):
                 for mention in mentions:
                     mention_span, context, offset, pageid, wikidata_id, is_nil = mention
 
@@ -169,12 +170,13 @@ if __name__ == '__main__':
         help='Path to output file (stdout if not specified). If ends in .gz or .bz2, '
              'the output file will be automatically compressed (recommended!).',
         default="nil_mentions.json")
+    parser.add_argument('-x', "--nil_only", default=False)
 
     args = parser.parse_args()
 
     outfile = gensim.utils.open(args.output, 'wb')
 
-    mentions_stream = extract_mentions(args.mapping, args.nils, args.file, default_workers)
+    mentions_stream = extract_mentions(args.mapping, args.nils, args.file, default_workers, args.nil_only)
 
     for idx, mention in enumerate(mentions_stream):
         mention["id"] = idx
