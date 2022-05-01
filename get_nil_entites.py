@@ -38,4 +38,8 @@ if __name__ == '__main__':
 
     with open(args.output_file, "w") as f:
         for id in nil_ids:
-            f.write(id + '\t' + mmap[id] + "\n")
+            enwiki = mmap[id]
+            if enwiki.startswith("Category:") or enwiki.startswith("Wikipedia:") or enwiki.startswith("Module:") \
+                or enwiki.startswith("Template:") or enwiki.startswith("Portal:"):
+                continue
+            f.write(id + '\t' + enwiki + "\n")
