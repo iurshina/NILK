@@ -3,6 +3,31 @@ import argparse
 import gzip
 import json
 
+# {
+#       "property" : {
+#         "type" : "uri",
+#         "value" : "http://www.wikidata.org/entity/P31"
+#       },
+#       "propertyLabel" : {
+#         "xml:lang" : "en",
+#         "type" : "literal",
+#         "value" : "instance of"
+#       }
+# }
+
+# {
+#       "property" : {
+#         "type" : "uri",
+#         "value" : "http://www.wikidata.org/entity/P279"
+#       },
+#       "propertyLabel" : {
+#         "xml:lang" : "en",
+#         "type" : "literal",
+#         "value" : "subclass of"
+#       }
+#     }
+# }
+
 
 def get_mapping(wikidata_path):
     with gzip.open(wikidata_path, 'rb') as gf:
@@ -18,6 +43,13 @@ def get_mapping(wikidata_path):
             if "sitelinks" in obj and "enwiki" in obj["sitelinks"]:
                 enwiki = obj["sitelinks"]["enwiki"]["title"]
             if enwiki is None:
+                continue
+
+            claims = obj["claims"]
+            if "P279" in claims.keys():  # subclass
+                continue
+
+            if "P31" not in claims.keys():  # instance of
                 continue
 
             yield id, enwiki
