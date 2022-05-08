@@ -37,4 +37,4 @@ if __name__ == '__main__':
             if enwiki.startswith("Category:") or enwiki.startswith("Wikipedia:") or enwiki.startswith("Module:") \
                 or enwiki.startswith("Template:") or enwiki.startswith("Portal:"):
                 continue
-            f.write(id + '\t' + enwiki + "\n")
+            f.write(id + '\t' + enwiki)
