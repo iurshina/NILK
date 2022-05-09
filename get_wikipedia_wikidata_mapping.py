@@ -29,7 +29,7 @@ import json
 # }
 
 
-def get_mapping(wikidata_path):
+def get_mapping(wikidata_path, filter_claims):
     with gzip.open(wikidata_path, 'rb') as gf:
         for ln in gf:
             if ln == b'[\n' or ln == b']\n':
@@ -45,14 +45,14 @@ def get_mapping(wikidata_path):
             if enwiki is None:
                 continue
 
-            claims = obj["claims"]
-            if "P279" in claims.keys():  # subclass
-                print("P279: " + str(claims["P279"]))
-                continue
+            if filter_claims:
+                claims = obj["claims"]
+                if "P279" in claims.keys():  # subclass
+                    print("P279: " + str(claims["P279"]))
+                    continue
 
-            if "P31" not in claims.keys():  # instance of
-                print("P31: " + str(claims["P31"]))
-                continue
+                if "P31" not in claims.keys():  # instance of
+                    continue
 
             yield id, enwiki
 
@@ -61,10 +61,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-w', '--wikidata', default="")
+    parser.add_argument('-f', '--filter_claims', default=False)
     parser.add_argument('-o', '--output', default="wiki_wikidata_mapping.json")
 
     args = parser.parse_args()
 
     with open(args.output, "w") as out:
-        for id, enwiki in get_mapping(args.wikidata):
+        for id, enwiki in get_mapping(args.wikidata, args.filter_claims):
             out.write(id + "\t" + enwiki + "\n")
