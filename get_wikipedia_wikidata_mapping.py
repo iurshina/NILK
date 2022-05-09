@@ -47,11 +47,11 @@ def get_mapping(wikidata_path):
 
             claims = obj["claims"]
             if "P279" in claims.keys():  # subclass
-                print("P279: " + claims["P279"])
+                print("P279: " + str(claims["P279"]))
                 continue
 
             if "P31" not in claims.keys():  # instance of
-                print("P31: " + claims["P31"])
+                print("P31: " + str(claims["P31"]))
                 continue
 
             yield id, enwiki
