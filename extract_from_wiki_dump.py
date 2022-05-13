@@ -127,23 +127,33 @@ def extract_mentions(mapping, nils_file, wiki_dump, workers, nil_only=False):
                 parts = l.split("\t")
                 wikidata_to_wikipedia[parts[1].lower().replace("\n", "")] = parts[0]
 
-    processes = workers
     with gensim.utils.open(wiki_dump, 'rb') as xml_fileobj:
         page_xmls = extract_page_xmls(xml_fileobj)
-        pool = multiprocessing.Pool(processes)
 
         # total - pages in 2017 wikipedia
-        for group in tqdm(utils.chunkize(page_xmls, chunksize=10 * processes, maxsize=1), total=17_303_347/(10 * processes)):
-            for mentions in pool.map(partial(segment, nil_only=nil_only, mapping=wikidata_to_wikipedia, nils=nils), group):
-                for mention in mentions:
-                    mention_span, context, offset, pageid, wikidata_id, is_nil = mention
+        for xmll in tqdm(page_xmls, total=17_303_347):
+            mentions = segment(xmll, nil_only=nil_only, mapping=wikidata_to_wikipedia, nils=nils)
+            for mention in mentions:
+                mention_span, context, offset, pageid, wikidata_id, is_nil = mention
 
-                    mention = {"mention": mention_span, "offset": offset, "length": len(mention_span), "context": context,
-                               "wikipedia_page_id": pageid, "wikidata_id": wikidata_id, "nil": is_nil}
+                mention = {"mention": mention_span, "offset": offset, "length": len(mention_span), "context": context,
+                                   "wikipedia_page_id": pageid, "wikidata_id": wikidata_id, "nil": is_nil}
 
-                    yield mention
+                yield mention
 
-        pool.terminate()
+        # pool = multiprocessing.Pool(processes)
+        #
+        # for group in tqdm(utils.chunkize(page_xmls, chunksize=10 * processes, maxsize=1), total=17_303_347/(10 * processes)):
+        #     for mentions in pool.map(partial(segment, nil_only=nil_only, mapping=wikidata_to_wikipedia, nils=nils), group):
+        #         for mention in mentions:
+        #             mention_span, context, offset, pageid, wikidata_id, is_nil = mention
+        #
+        #             mention = {"mention": mention_span, "offset": offset, "length": len(mention_span), "context": context,
+        #                        "wikipedia_page_id": pageid, "wikidata_id": wikidata_id, "nil": is_nil}
+        #
+        #             yield mention
+        #
+        # pool.terminate()
 
 
 if __name__ == '__main__':
