@@ -1,29 +1,11 @@
 # based on: https://github.com/RaRe-Technologies/gensim/blob/develop/gensim/scripts/segment_wiki.py
 
-# JSON of mentions file
-# {[{
-# mention_id: 1,
-# context: "Lalal",
-# offset: 12,
-# length: 10,
-# wikipedia_page_id: ...,
-# wikidata_id: Q19302, # for disambiguation
-# nil: True
-# }]}
 
-# add page id and code how to extract the whole pages by page id (probably find the tool)?
-
-# 1. Get NIL-metions file
-# 1.5 Get not-NIL mentions file while checking that they are not in NIL list (use mapping for 2017)
-# 2. Get All mentions file (nil and not nil for 2017 versions), delete the one from step 1
-
-# TIME: Thu evening started, Sat morning over 1,5 days...
-
-
-from gensim.corpora.wikicorpus import get_namespace, utils, RE_P16, filter_wiki, remove_markup
+from gensim.corpora.wikicorpus import get_namespace, utils, RE_P16, filter_wiki, remove_markup, IGNORED_NAMESPACES
 import gensim.utils
 import re
 import json
+from tqdm import tqdm
 from functools import partial
 import multiprocessing
 import argparse
@@ -67,10 +49,15 @@ def segment(page_xml, nil_only=False, mapping=None, nils=None):
     namespace = get_namespace(elem.tag)
     ns_mapping = {"ns": namespace}
     text_path = "./{%(ns)s}revision/{%(ns)s}text" % ns_mapping
+    title_path = "./{%(ns)s}title" % ns_mapping
     pageid_path = "./{%(ns)s}id" % ns_mapping
 
     text = elem.find(text_path).text
+    title = elem.find(title_path).text
     pageid = elem.find(pageid_path).text
+
+    if any(title.startswith(ignore + ':') for ignore in IGNORED_NAMESPACES):  # filter non-articles
+        return []
 
     if text is None or len(text) == 0:
         return []
@@ -94,7 +81,7 @@ def segment(page_xml, nil_only=False, mapping=None, nils=None):
             mention_span = mention_span_parts[0]
 
         is_nil = False
-        if wikipedia_link in nils.keys():
+        if wikipedia_link.lower() in nils.keys():
             # take 500 character on each side... #todo: ???
             left_context = filtered[max(0, start - 500):start]
             right_context = filtered[end:min(end + 500, len(filtered))]
@@ -107,7 +94,7 @@ def segment(page_xml, nil_only=False, mapping=None, nils=None):
             mentions.append((mention_span, left_context + mention_span + right_context, len(left_context),
                              pageid, nils[wikipedia_link.lower()], True))
             is_nil = True
-        if not nil_only and wikipedia_link in mapping.keys():
+        if not nil_only and wikipedia_link.lower() in mapping.keys():
             left_context = filtered[max(0, start - 500):start]
             right_context = filtered[end:min(end + 500, len(filtered))]
             left_context = remove_markup(left_context)
@@ -145,7 +132,7 @@ def extract_mentions(mapping, nils_file, wiki_dump, workers, nil_only=False):
         page_xmls = extract_page_xmls(xml_fileobj)
         pool = multiprocessing.Pool(processes)
 
-        for group in utils.chunkize(page_xmls, chunksize=10 * processes, maxsize=1):
+        for group in tqdm(utils.chunkize(page_xmls, chunksize=10 * processes, maxsize=1), total=17_303_347/(10 * processes)):
             for mentions in pool.imap(partial(segment, nil_only=nil_only, mapping=wikidata_to_wikipedia, nils=nils), group):
                 for mention in mentions:
                     mention_span, context, offset, pageid, wikidata_id, is_nil = mention
