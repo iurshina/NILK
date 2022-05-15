@@ -30,6 +30,12 @@ if __name__ == '__main__':
 
             c[mapping[wikidata_id]] += 1
 
-    print("Number of nil entities: " + str(len(c.keys())))
+    n_more_1 = 0
+    for k, v in c.items():
+        if v > 1:
+            n_more_1 += 1
 
-    print(c)
+    print("Number of nil entities: " + str(len(c.keys())))
+    print("Number of nil entities, more than 1: " + str(n_more_1))
+
+    # print(c)
