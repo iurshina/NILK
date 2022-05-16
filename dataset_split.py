@@ -1,6 +1,7 @@
 import json
 from collections import Counter
 import numpy as np
+import random
 
 # 80, 10, 10
 
@@ -38,17 +39,12 @@ for id, n in n_c.items():
         buckets[k] = []
     buckets[k].append(id)
 
-# print(buckets)
-# print("max: " + str(max(buckets.keys())))
-# print("min: " + str(min(buckets.keys())))
-
 # split each bucket
 train_ids = set()
 test_ids = set()
 val_ids = set()
 for v in buckets.values():
-    # print("Nils: " + str(len(v)))
-    train, validate, test = np.split(np.array(v), [int(.8 * len(v)), int(.9 * len(v))])
+    train, validate, test = np.split(np.array(random.shuffle(v)), [int(.8 * len(v)), int(.9 * len(v))])
     train_ids.update(train)
     val_ids.update(validate)
     test_ids.update(test)
@@ -69,8 +65,7 @@ for id, n in c.items():
     buckets[k].append(id)
 
 for v in buckets.values():
-    # print("Linked: " + str(len(v)))
-    train, validate, test = np.split(np.array(v), [int(.8 * len(v)), int(.9 * len(v))])
+    train, validate, test = np.split(random.shuffle(v), [int(.8 * len(v)), int(.9 * len(v))])
     train_ids.update(train)
     val_ids.update(validate)
     test_ids.update(test)
