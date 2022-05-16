@@ -30,6 +30,8 @@ for id, n in n_c.items():
     buckets[n].append(id)
 
 print(buckets)
+print("max: " + str(max(buckets.keys())))
+print("min: " + str(min(buckets.keys())))
 
 # split each bucket
 train_ids = set()
