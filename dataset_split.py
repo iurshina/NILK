@@ -1,5 +1,6 @@
 import json
 from collections import Counter
+import numpy as np
 
 # 80, 10, 10
 
@@ -33,12 +34,10 @@ train_ids = set()
 test_ids = set()
 val_ids = set()
 for v in buckets.values():
-    training = v[:int(len(v) * 0.8)]
-    train_ids.update(training)
-    validation = v[-int(len(v) * 0.1):]
-    val_ids.update(validation)
-    testing = v[-int(len(v) * 0.1):]
-    test_ids.update(testing)
+    train, validate, test = np.split(np.array(v), [int(.8 * len(v)), int(.9 * len(v))])
+    train_ids.update(train)
+    val_ids.update(validate)
+    test_ids.update(test)
 
 buckets = {}
 for id, n in c.items():
@@ -47,12 +46,10 @@ for id, n in c.items():
     buckets[n].append(id)
 
 for v in buckets.values():
-    training = v[:int(len(v) * 0.8)]
-    train_ids.update(training)
-    validation = v[-int(len(v) * 0.1):]
-    val_ids.update(validation)
-    testing = v[-int(len(v) * 0.1):]
-    test_ids.update(testing)
+    train, validate, test = np.split(np.array(v), [int(.8 * len(v)), int(.9 * len(v))])
+    train_ids.update(train)
+    val_ids.update(validate)
+    test_ids.update(test)
 
 with open("test.json", "w") as test, open("train.json", "w") as train, open("valid.json", "w") as valid, open("all_mentions.json") as input:
     for l in input:
@@ -60,10 +57,10 @@ with open("test.json", "w") as test, open("train.json", "w") as train, open("val
         wikidata_id = line["wikidata_id"]
 
         if wikidata_id in train_ids:
-            train.write(json.dumps(line))
+            train.write(json.dumps(line) + "\n")
         elif wikidata_id in test_ids:
-            test.write(json.dumps(line))
+            test.write(json.dumps(line) + "\n")
         elif wikidata_id in val_ids:
-            valid.write(json.dumps(line))
+            valid.write(json.dumps(line) + "\n")
         else:
             print("Id doesn't belong: " + str(wikidata_id))
