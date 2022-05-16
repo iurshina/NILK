@@ -29,6 +29,8 @@ for id, n in n_c.items():
         buckets[n] = []
     buckets[n].append(id)
 
+print(buckets)
+
 # split each bucket
 train_ids = set()
 test_ids = set()
