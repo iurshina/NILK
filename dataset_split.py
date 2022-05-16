@@ -36,7 +36,7 @@ train_ids = set()
 test_ids = set()
 val_ids = set()
 for v in buckets.values():
-    print("Nils: " + str(len(v)))
+    # print("Nils: " + str(len(v)))
     train, validate, test = np.split(np.array(v), [int(.8 * len(v)), int(.9 * len(v))])
     train_ids.update(train)
     val_ids.update(validate)
@@ -49,7 +49,7 @@ for id, n in c.items():
     buckets[n].append(id)
 
 for v in buckets.values():
-    print("Linked: " + str(len(v)))
+    # print("Linked: " + str(len(v)))
     train, validate, test = np.split(np.array(v), [int(.8 * len(v)), int(.9 * len(v))])
     train_ids.update(train)
     val_ids.update(validate)
