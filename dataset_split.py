@@ -25,13 +25,22 @@ with open("all_mentions.json") as f, open("both.txt", "w") as out:
 # split keeping the ratio
 buckets = {}
 for id, n in n_c.items():
-    if n not in buckets:
-        buckets[n] = []
-    buckets[n].append(id)
+    k = 1
+    if 1 < n < 5:
+        k = 2
+    if 5 <= n < 100:
+        k = 3
+    if 100 <= n < 1000:
+        k = 4
+    if 1000 <= n:
+        k = 5
+    if k not in buckets:
+        buckets[k] = []
+    buckets[k].append(id)
 
-print(buckets)
-print("max: " + str(max(buckets.keys())))
-print("min: " + str(min(buckets.keys())))
+# print(buckets)
+# print("max: " + str(max(buckets.keys())))
+# print("min: " + str(min(buckets.keys())))
 
 # split each bucket
 train_ids = set()
@@ -46,9 +55,18 @@ for v in buckets.values():
 
 buckets = {}
 for id, n in c.items():
-    if n not in buckets:
-        buckets[n] = []
-    buckets[n].append(id)
+    k = 1
+    if 1 < n < 5:
+        k = 2
+    if 5 <= n < 100:
+        k = 3
+    if 100 <= n < 1000:
+        k = 4
+    if 1000 <= n:
+        k = 5
+    if k not in buckets:
+        buckets[k] = []
+    buckets[k].append(id)
 
 for v in buckets.values():
     # print("Linked: " + str(len(v)))
