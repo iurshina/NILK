@@ -44,7 +44,8 @@ train_ids = set()
 test_ids = set()
 val_ids = set()
 for v in buckets.values():
-    train, validate, test = np.split(np.array(random.shuffle(v)), [int(.8 * len(v)), int(.9 * len(v))])
+    random.shuffle(v)
+    train, validate, test = np.split(np.array(v), [int(.8 * len(v)), int(.9 * len(v))])
     train_ids.update(train)
     val_ids.update(validate)
     test_ids.update(test)
@@ -65,7 +66,8 @@ for id, n in c.items():
     buckets[k].append(id)
 
 for v in buckets.values():
-    train, validate, test = np.split(random.shuffle(v), [int(.8 * len(v)), int(.9 * len(v))])
+    random.shuffle(v)
+    train, validate, test = np.split(np.array(v), [int(.8 * len(v)), int(.9 * len(v))])
     train_ids.update(train)
     val_ids.update(validate)
     test_ids.update(test)
