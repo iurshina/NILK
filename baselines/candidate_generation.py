@@ -42,10 +42,9 @@ def get_id_wrong(mapping_name):
                 continue
 
             if name.lower() in name_to_id.keys() and id != name_to_id[name]:
-                o.write(name + "\t" + name_to_id[name] + "\t" + id)
+                o.write(name + "\t" + name_to_id[name] + "\t" + id + "\n")
 
             # todo: add triplet
-
 
 
 def find_candidates(input_file: str, output_file: str):
