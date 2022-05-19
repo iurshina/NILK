@@ -42,8 +42,8 @@ def get_id_wrong(mapping_name):
                 continue
 
             print("name: " + name)
-            print("names from map :" + str(name_to_id.keys())[:5])
-            print("values from map :" + str(name_to_id.values())[:5])
+            print("names from map :" + str(next(iter((name_to_id.keys())))))
+            print("values from map :" + str(next(iter((name_to_id.values())))))
 
             if name.lower() in name_to_id.keys() and id != name_to_id[name]:
                 o.write(name + "\t" + name_to_id[name] + "\t" + id + "\n")
