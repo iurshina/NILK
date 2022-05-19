@@ -23,7 +23,7 @@ def get_id_wrong(mapping_name):
             else:
                 obj = json.loads(ln)
             id = obj["id"]
-            name = obj["name"]
+            name = obj["labels"]["en"]["value"]
             enwiki = None
             if "sitelinks" in obj and "enwiki" in obj["sitelinks"]:
                 enwiki = obj["sitelinks"]["enwiki"]["title"]
