@@ -15,7 +15,7 @@ def get_id_wrong(mapping_name):
             parts = l.split("\t")
             name_to_id[parts[1].lower().replace("\n", "")] = parts[0]
 
-    with gzip.open("../../data/wikidata-20170213-all.json.gz", 'rb', 'rb') as gf, open("wrong_ids_linked_2017.tsv", "w") as o:
+    with gzip.open("../../data/wikidata-20170213-all.json.gz", 'rb', 'rb') as gf, open("wrong_ids_nils_for_2017.tsv", "w") as o:
         for ln in gf:
             if ln == b'[\n' or ln == b']\n':
                 continue
@@ -80,6 +80,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     # find_candidates(args.input)
 
-    get_id_wrong("2017_mapping_instance_not_subclass.tvs")
+    get_id_wrong("2021_minus_2017_instance_not_sublass.txt")
 
 
