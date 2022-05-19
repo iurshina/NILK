@@ -12,7 +12,8 @@ def get_id_wrong(mapping_name):
     name_to_id = {}
     with open(mapping_name) as f:
         for l in f:
-            name_to_id[l[1].lower().replace("\n", "")] = l[0]
+            parts = l.split("\t")
+            name_to_id[parts[1].lower().replace("\n", "")] = parts[0]
 
     with gzip.open("../../data/wikidata-20170213-all.json.gz", 'rb', 'rb') as gf, open("wrong_ids_linked_2017.tsv", "w") as o:
         for ln in gf:
