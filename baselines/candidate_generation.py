@@ -41,6 +41,10 @@ def get_id_wrong(mapping_name):
             if "P31" not in claims.keys():  # instance of
                 continue
 
+            print("name: " + name)
+            print("names from map :" + str(name_to_id.keys())[:5])
+            print("values from map :" + str(name_to_id.values())[:5])
+
             if name.lower() in name_to_id.keys() and id != name_to_id[name]:
                 o.write(name + "\t" + name_to_id[name] + "\t" + id + "\n")
 
