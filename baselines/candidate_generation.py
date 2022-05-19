@@ -26,7 +26,7 @@ def get_id_wrong(mapping_name):
             id = obj["id"]
             if "en" not in obj["labels"].keys():
                 continue
-            name = obj["labels"]["en"]["value"]
+            name = obj["labels"]["en"]["value"].lower()
             enwiki = None
             if "sitelinks" in obj and "enwiki" in obj["sitelinks"]:
                 enwiki = obj["sitelinks"]["enwiki"]["title"]
@@ -42,11 +42,11 @@ def get_id_wrong(mapping_name):
             if "P31" not in claims.keys():  # instance of
                 continue
 
-            print("name: " + name)
-            print("names from map :" + str(next(iter((name_to_id.keys())))))
-            print("values from map :" + str(next(iter((name_to_id.values())))))
+            # print("name: " + name)
+            # print("names from map :" + str(next(iter((name_to_id.keys())))))
+            # print("values from map :" + str(next(iter((name_to_id.values())))))
 
-            if name.lower() in name_to_id.keys() and id != name_to_id[name]:
+            if name in name_to_id.keys() and id != name_to_id[name]:
                 o.write(name + "\t" + name_to_id[name] + "\t" + id + "\n")
 
             # todo: add triplet
