@@ -47,9 +47,9 @@ def get_mapping(wikidata_path, filter_claims):
 
             if filter_claims:
                 claims = obj["claims"]
-                print(str(claims))
+                # print(str(claims))
                 if "P279" in claims.keys():  # subclass
-                    print("P279: " + str(claims["P279"]))
+                    # print("P279: " + str(claims["P279"]))
                     continue
 
                 if "P31" not in claims.keys():  # instance of

@@ -15,7 +15,8 @@ def get_id_wrong(mapping_name):
             parts = l.split("\t")
             name_to_id[parts[1].lower().replace("\n", "")] = parts[0]
 
-    with gzip.open("../../data/wikidata-20170213-all.json.gz", 'rb', 'rb') as gf, open("wrong_ids_nils_for_2017.tsv", "w") as o:
+    with gzip.open("../../data/wikidata-20170213-all.json.gz", 'rb', 'rb') as gf, \
+            open("wrong_ids_nils.tsv", "w") as o:
         for ln in gf:
             if ln == b'[\n' or ln == b']\n':
                 continue
@@ -48,8 +49,13 @@ def get_id_wrong(mapping_name):
 
             if name in name_to_id.keys() and id != name_to_id[name]:
                 o.write(name + "\t" + name_to_id[name] + "\t" + id + "\n")
+            else:
+                for str in name_to_id.keys():
+                    if name in str:
+                        o.write(name + "\t" + name_to_id[name] + "\t" + id + "\n")
+                        break
 
-            # todo: add triplet
+            # todo: add triplet?
 
 
 def find_candidates(input_file: str, output_file: str):
