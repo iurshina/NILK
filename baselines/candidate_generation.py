@@ -7,34 +7,37 @@
 import argparse
 
 
-def get_id_wrong(mapping_name):
-    name_to_id_mentions = {}
-    with open(mapping_name) as f:
-        for l in f:
-            parts = l.split("\t")
-            name_to_id_mentions[parts[1].lower().replace("\n", "")] = parts[0]
-
+def get_id_wrong():
     name_to_id_all_wikidata = {}
     with open("name_id_wikidata_2017.tsv") as f:
         for l in f:
             parts = l.split("\t")
-            name_to_id_all_wikidata[parts[1].lower().replace("\n", "")] = parts[0]
+            name = parts[1].lower().replace("\n", "")
+            id = parts[0]
+            if name not in name_to_id_all_wikidata.keys():
+                name_to_id_all_wikidata[name] = []
+            name_to_id_all_wikidata[name].append(id)
 
-    with open("wrong_candidate_for_all_mentions.tsv") as o:
-        for name in name_to_id_mentions.keys():
-            mention_right_id = name_to_id_mentions[name]
+    with open("wrong_candidate_for_all_mentions.tsv", "w") as o, open("mapping_from_all_mentions.txt") as f:
+        for l in f:
+            parts = l.split("\t")
+            name = parts[1].lower().replace("\n", "")
+            mention_right_id = parts[0]
 
-            if name in name_to_id_all_wikidata.keys() and mention_right_id != name_to_id_all_wikidata[name]:
-                # mention, correct 2021 id, candidate name, candidate id
-                o.write(name + "\t" + mention_right_id + "\t" + name + "\t" + name_to_id_all_wikidata[name]  + "\n")
-            else:
+            selected = ""
+            if name in name_to_id_all_wikidata.keys():
+                ids_candidates = name_to_id_all_wikidata[name]
+                for id in ids_candidates:
+                    if id != mention_right_id:
+                        selected = id
+                        # mention, correct 2021 id, candidate name, candidate id
+                        o.write(name + "\t" + mention_right_id + "\t" + name + "\t" + selected + "\n")
+                        break
+            if len(selected) == 0:
                 best_match = ""
                 jaccard_sim_ = 0
                 mention_tokens = frozenset(name.split())
                 for str in name_to_id_all_wikidata.keys():
-                    if mention_right_id == name_to_id_all_wikidata[str]:
-                        continue
-
                     candidate_tokens = frozenset(str.split())
                     jaccard_sim = len(mention_tokens.intersection(candidate_tokens)) / len(mention_tokens.union(candidate_tokens))
                     if jaccard_sim > jaccard_sim_:
@@ -44,10 +47,16 @@ def get_id_wrong(mapping_name):
                         # Jaccard is the same but the first token has more "value"
                         if str.split()[0] == name.split()[0]:
                             best_match = str
-                    if len(best_match) > 0:
-                        o.write(name + "\t" + mention_right_id + "\t" + best_match + "\t" + name_to_id_all_wikidata[best_match] + "\n")
-                    else:
-                        print("No candidate for " + name)
+                if len(best_match) > 0:
+                    ids_candidates = name_to_id_all_wikidata[name]
+                    for id in ids_candidates:
+                        if id != mention_right_id:
+                            selected = id
+                            # mention, correct 2021 id, candidate name, candidate id
+                            o.write(name + "\t" + mention_right_id + "\t" + best_match + "\t" + selected + "\n")
+                            break
+            if len(selected) == 0:
+                print("No candidate for " + name)
 
 
 if __name__ == '__main__':
@@ -58,4 +67,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     # find_candidates(args.input)
 
-    get_id_wrong("mapping_from_all_mentions.txt")
+    get_id_wrong()
