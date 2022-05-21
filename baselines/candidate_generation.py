@@ -38,6 +38,9 @@ def get_id_wrong():
                 jaccard_sim_ = 0
                 mention_tokens = frozenset(name.split())
                 for str in name_to_id_all_wikidata.keys():
+                    if len(name_to_id_all_wikidata[str]) == 1 and name_to_id_all_wikidata[str][0] == id:
+                        continue
+
                     candidate_tokens = frozenset(str.split())
                     jaccard_sim = len(mention_tokens.intersection(candidate_tokens)) / len(mention_tokens.union(candidate_tokens))
                     if jaccard_sim > jaccard_sim_:
