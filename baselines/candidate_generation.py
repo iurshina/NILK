@@ -34,6 +34,7 @@ def get_id_wrong():
                         # mention, correct 2021 id, candidate name, candidate id
                         o.write(name + "\t" + mention_right_id + "\t" + name + "\t" + selected + "\n")
                         break
+
             if len(selected) == 0:
                 best_match = ""
                 jaccard_sim_ = 0
@@ -47,10 +48,11 @@ def get_id_wrong():
                     if jaccard_sim > jaccard_sim_:
                         jaccard_sim_ = jaccard_sim
                         best_match = str
-                    elif jaccard_sim == jaccard_sim_:
-                        # Jaccard is the same but the first token has more "value"
+
                         if str.split()[0] == name.split()[0]:
-                            best_match = str
+                            break
+                    if jaccard_sim > 0.9:
+                        break
                 if len(best_match) > 0:
                     ids_candidates = name_to_id_all_wikidata[best_match]
                     for id in ids_candidates:
