@@ -51,7 +51,7 @@ def get_id_wrong():
 
                         if str.split()[0] == name.split()[0]:
                             break
-                    if jaccard_sim > 0.9:
+                    if jaccard_sim_ > 0.9:
                         break
                 if len(best_match) > 0:
                     ids_candidates = name_to_id_all_wikidata[best_match]
