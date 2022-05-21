@@ -15,7 +15,7 @@ def get_id_wrong(mapping_name):
             name_to_id_mentions[parts[1].lower().replace("\n", "")] = parts[0]
 
     name_to_id_all_wikidata = {}
-    with open("name_id_wikidata_2017") as f:
+    with open("name_id_wikidata_2017.tsv") as f:
         for l in f:
             parts = l.split("\t")
             name_to_id_all_wikidata[parts[1].lower().replace("\n", "")] = parts[0]
