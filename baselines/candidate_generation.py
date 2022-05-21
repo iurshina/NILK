@@ -52,7 +52,7 @@ def get_id_wrong(mapping_name):
             else:
                 for str in name_to_id.keys():
                     if name in str:
-                        o.write(name + "\t" + name_to_id[name] + "\t" + id + "\n")
+                        o.write(name + "\t" + str + "\t" + id + "\n")
                         break
 
             # todo: add triplet?
