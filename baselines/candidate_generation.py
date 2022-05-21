@@ -16,7 +16,7 @@ def get_id_wrong(mapping_name):
             name_to_id[parts[1].lower().replace("\n", "")] = parts[0]
 
     with gzip.open("../../data/wikidata-20170213-all.json.gz", 'rb', 'rb') as gf, \
-            open("wrong_ids_all_mentions.tsv", "w") as o:
+            open("wrong_ids_all_mentions_with_jaccard.tsv", "w") as o:
         for ln in gf:
             if ln == b'[\n' or ln == b']\n':
                 continue
@@ -48,13 +48,20 @@ def get_id_wrong(mapping_name):
             # print("values from map :" + str(next(iter((name_to_id.values())))))
 
             if name in name_to_id.keys() and id != name_to_id[name]:
+                # mention, correct 2021 id, candidate name, candidate id
                 o.write(name + "\t" + name_to_id[name] + "\t" + name + "\t" + id + "\n")
-            # else:
-            #     for str in name_to_id.keys():
-            #         if str in name and id != name_to_id[str]:
-            #             # mention, correct 2021 id, candidate name, candidate id
-            #             o.write(str + "\t" + name_to_id[str] + '\t' + name + "\t" + id + "\n")
-            #             # break
+            else:
+                best_match = ""
+                jaccard_sim_ = 0
+                name_tokens = set(name.split())
+                for str in name_to_id.keys():
+                    mention_tokens = set(str.split())
+                    jaccard_sim = len(name_tokens.intersection(mention_tokens)) / len(mention_tokens.union(name_tokens))
+                    if jaccard_sim > jaccard_sim_:
+                        jaccard_sim_ = jaccard_sim
+                        best_match = str
+                if len(best_match) > 0:
+                    o.write(best_match + "\t" + name_to_id[best_match] + "\t" + name + "\t" + id + "\n")
 
             # todo: add triplet?
 
