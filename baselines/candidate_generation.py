@@ -19,7 +19,8 @@ def get_id_wrong():
                 name_to_id_all_wikidata[name] = []
             name_to_id_all_wikidata[name].append(id)
 
-    with open("wrong_candidate_for_all_mentions.tsv", "w") as o, open("mapping_from_all_mentions_no_dubs.txt") as f:
+    with open("wrong_candidate_for_all_mentions.tsv", "w") as o, open("mapping_from_all_mentions_no_dubs.txt") as f, \
+            open("no_candidates.txt", "w") as nc:
         for l in tqdm(f, total=256936):
             parts = l.split("\t")
             name = parts[1].lower().replace("\n", "")
@@ -51,7 +52,7 @@ def get_id_wrong():
 
                         if str.split()[0] == name.split()[0]:
                             break
-                    if jaccard_sim_ > 0.9:
+                    if jaccard_sim_ > 0.8:
                         break
                 if len(best_match) > 0:
                     ids_candidates = name_to_id_all_wikidata[best_match]
@@ -63,6 +64,7 @@ def get_id_wrong():
                             break
             if len(selected) == 0:
                 print("No candidate for " + name)
+                nc.write(name + "\t" + mention_right_id + "\n")
 
 
 if __name__ == '__main__':
