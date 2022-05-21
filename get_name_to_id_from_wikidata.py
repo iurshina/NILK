@@ -29,4 +29,10 @@ with gzip.open("../../data/wikidata-20170213-all.json.gz", 'rb', 'rb') as gf, \
         if "P31" not in claims.keys():  # instance of
             continue
 
+        if name.startswith("category:"):
+            continue
+
+        if name.startswith("template:"):
+            continue
+
         o.write(name + '\t' + id + '\n')
