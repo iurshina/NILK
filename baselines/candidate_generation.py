@@ -38,7 +38,7 @@ def get_id_wrong():
                 jaccard_sim_ = 0
                 mention_tokens = frozenset(name.split())
                 for str in name_to_id_all_wikidata.keys():
-                    if len(name_to_id_all_wikidata[str]) == 1 and name_to_id_all_wikidata[str][0] == id:
+                    if len(name_to_id_all_wikidata[str]) == 1 and name_to_id_all_wikidata[str][0] == mention_right_id:
                         continue
 
                     candidate_tokens = frozenset(str.split())
