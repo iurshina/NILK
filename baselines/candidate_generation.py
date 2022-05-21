@@ -5,6 +5,7 @@
 
 
 import argparse
+from tqdm import tqdm
 
 
 def get_id_wrong():
@@ -19,7 +20,7 @@ def get_id_wrong():
             name_to_id_all_wikidata[name].append(id)
 
     with open("wrong_candidate_for_all_mentions.tsv", "w") as o, open("mapping_from_all_mentions.txt") as f:
-        for l in f:
+        for l in tqdm(f):
             parts = l.split("\t")
             name = parts[1].lower().replace("\n", "")
             mention_right_id = parts[0]
@@ -51,7 +52,7 @@ def get_id_wrong():
                         if str.split()[0] == name.split()[0]:
                             best_match = str
                 if len(best_match) > 0:
-                    ids_candidates = name_to_id_all_wikidata[name]
+                    ids_candidates = name_to_id_all_wikidata[best_match]
                     for id in ids_candidates:
                         if id != mention_right_id:
                             selected = id
