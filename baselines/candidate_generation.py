@@ -1,9 +1,5 @@
 # get candidates with the same surface form as the mention, output in WikiDisamb format
 
-# 0       Q3918   university      The University of Nanking (金陵大学) was a private university in Nanjing, China         1
-# 1       Q7894492        university      The University of Nanking (金陵大学) was a private university in Nanjing, China         0
-
-
 import argparse
 from tqdm import tqdm
 
@@ -39,19 +35,19 @@ def get_id_wrong():
             if len(selected) == 0:
                 best_match = ""
                 jaccard_sim_ = 0
-                mention_tokens = frozenset(name.split())
+                mention_tokens = set(name.split())
                 for str in name_to_id_all_wikidata.keys():
                     if len(name_to_id_all_wikidata[str]) == 1 and name_to_id_all_wikidata[str][0] == mention_right_id:
                         continue
 
-                    candidate_tokens = frozenset(str.split())
+                    candidate_tokens = set(str.split())
                     jaccard_sim = len(mention_tokens.intersection(candidate_tokens)) / len(mention_tokens.union(candidate_tokens))
                     if jaccard_sim > jaccard_sim_:
                         jaccard_sim_ = jaccard_sim
                         best_match = str
 
-                        if str.split()[0] == name.split()[0]:
-                            break
+                        # if str.split()[0] == name.split()[0]:
+                        #     break
                     if jaccard_sim_ > 0.8:
                         break
                 if len(best_match) > 0:
