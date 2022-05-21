@@ -12,8 +12,8 @@ def get_id_wrong():
     with open("name_id_wikidata_2017.tsv") as f:
         for l in f:
             parts = l.split("\t")
-            name = parts[1].lower().replace("\n", "")
-            id = parts[0]
+            name = parts[0].lower()
+            id = parts[1].replace("\n", "")
             if name not in name_to_id_all_wikidata.keys():
                 name_to_id_all_wikidata[name] = []
             name_to_id_all_wikidata[name].append(id)
