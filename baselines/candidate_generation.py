@@ -20,7 +20,7 @@ def get_id_wrong():
             name_to_id_all_wikidata[name].append(id)
 
     with open("wrong_candidate_for_all_mentions.tsv", "w") as o, open("mapping_from_all_mentions.txt") as f:
-        for l in tqdm(f):
+        for l in tqdm(f, total=5004609):
             parts = l.split("\t")
             name = parts[1].lower().replace("\n", "")
             mention_right_id = parts[0]
