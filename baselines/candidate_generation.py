@@ -51,10 +51,10 @@ def get_id_wrong(mapping_name):
                 o.write(name + "\t" + name_to_id[name] + "\t" + name + "\t" + id + "\n")
             else:
                 for str in name_to_id.keys():
-                    if str in name:
+                    if str in name and id != name_to_id[str]:
                         # mention, correct 2021 id, candidate name, candidate id
                         o.write(str + "\t" + name_to_id[str] + '\t' + name + "\t" + id + "\n")
-                        break
+                        # break
 
             # todo: add triplet?
 
