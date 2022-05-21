@@ -54,7 +54,10 @@ def get_id_wrong(mapping_name):
                 best_match = ""
                 jaccard_sim_ = 0
                 name_tokens = set(name.split())
-                for str in name_to_id.keys() and id != name_to_id[str]:
+                for str in name_to_id.keys():
+                    if id == name_to_id[str]:
+                        continue
+
                     mention_tokens = set(str.split())
                     jaccard_sim = len(name_tokens.intersection(mention_tokens)) / len(mention_tokens.union(name_tokens))
                     if jaccard_sim > jaccard_sim_:
