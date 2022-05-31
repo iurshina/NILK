@@ -5,7 +5,7 @@ import matplotlib.pylab as plt
 
 
 c = Counter()
-with open("/Users/iurshina/Desktop/test.jsonl") as f:
+with open("all_mentions.json") as f:
     for l in f:
         line = json.loads(l)
         wikidata_id = line["wikidata_id"]
