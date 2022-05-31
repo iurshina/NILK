@@ -35,5 +35,8 @@ x = ["1", "2 to 5", "6 to 100", "101 to 1000", "1000+"]
 y = [len(buckets["1"]), len(buckets["2 to 5"]), len(buckets["6 to 100"]), len(buckets["101 to 1000"]), len(buckets["1000+"])]
 
 plt.plot(x, y)
+plt.ylabel('Number of entities')
+plt.xlabel('Number of mentions')
 # plt.show()
 plt.savefig('buckets.png')
+
