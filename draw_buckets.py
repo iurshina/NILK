@@ -14,6 +14,7 @@ with open("all_mentions.json") as f:
         is_nil = line["nil"]
 
         if is_nil:
+            print(str(is_nil))
             c[wikidata_id] += 1
 
 # vv = list(c.values())
