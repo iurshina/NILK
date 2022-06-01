@@ -32,8 +32,8 @@ with open("all_mention_01_06.json") as f:
 print("N entities not nil " + str(len(set_c_not_nil)))
 print("N entities nil " + str(len(set_c_nil)))
 
-print("N mentions not nil " + str(m_n))
-print("N mentions nil " + str(m_not_n))
+print("N mentions not nil " + str(m_not_n))
+print("N mentions nil " + str(m_n))
 
 # vv = list(c.values())
 # vv = sorted(vv)
