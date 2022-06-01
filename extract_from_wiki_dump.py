@@ -91,8 +91,9 @@ def segment(page_xml, nil_only=False, mapping=None, nils=None):
             if len(left_context) < 10 and len(right_context) < 10:
                 continue
 
+            nil_wikidata_id = nils[wikipedia_link.lower()]
             mentions.append((mention_span, left_context + mention_span + right_context, len(left_context),
-                             pageid, nils[wikipedia_link.lower()], True))
+                             pageid, nil_wikidata_id, True))
             is_nil = True
         if not nil_only and wikipedia_link.lower() in mapping.keys():
             left_context = filtered[max(0, start - 500):start]
@@ -107,7 +108,7 @@ def segment(page_xml, nil_only=False, mapping=None, nils=None):
 
             mentions.append((mention_span, left_context + mention_span + right_context, len(left_context),
                              pageid, wikidata_id, False))
-            if is_nil:
+            if is_nil and wikidata_id == nil_wikidata_id:
                 print("Error: an item is both in NILs and linked items: " + mention_span + ", " + wikidata_id)
 
     return mentions
