@@ -159,15 +159,15 @@ def extract_mentions(mapping, nils_file, wiki_dump, workers, nil_only=False):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     default_workers = max(1, multiprocessing.cpu_count() - 1)
-    parser.add_argument('-m', '--mapping', default="wiki_wikidata_mapping.json")
-    parser.add_argument("-n", "--nils", default="all_mentions.json")
+    parser.add_argument('-m', '--mapping', default="2017_mapping_instance_not_subclass.tsv")
+    parser.add_argument("-n", "--nils", default="2021_minus_2017_instance_not_sublass.txt")
     parser.add_argument('-f', '--file', help='Path to MediaWiki database dump (read-only).',
                         default="enwiki-20170220-pages-articles.xml.bz2")
     parser.add_argument(
         '-o', '--output',
         help='Path to output file (stdout if not specified). If ends in .gz or .bz2, '
              'the output file will be automatically compressed (recommended!).',
-        default="nil_mentions.json")
+        default="all_mention_01_06.json")
     parser.add_argument('-x', "--nil_only", default=False)
 
     args = parser.parse_args()
