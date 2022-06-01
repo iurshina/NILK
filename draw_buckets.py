@@ -16,11 +16,12 @@ with open("all_mentions.json") as f:
         is_nil = line["nil"]
 
         if is_nil:
-            print(str(is_nil))
-            c[wikidata_id] += 1
+            # print(str(is_nil))
             c_nil += 1
         else:
             c_not_nil += 1
+            c[wikidata_id] += 1
+
 
 print("N not nil " + str(c_not_nil))
 print("N nil " + str(c_nil))
