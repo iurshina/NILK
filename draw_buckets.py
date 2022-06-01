@@ -7,8 +7,8 @@ import numpy as np
 import math
 
 c = Counter()
-c_nil = 0
-c_not_nil = 0
+set_c_nil = set()
+set_c_not_nil = set()
 with open("all_mentions.json") as f:
     for l in f:
         line = json.loads(l)
@@ -17,14 +17,14 @@ with open("all_mentions.json") as f:
 
         if is_nil:
             # print(str(is_nil))
-            c_nil += 1
+            set_c_nil.add(wikidata_id)
         else:
-            c_not_nil += 1
+            set_c_not_nil.add(wikidata_id)
             c[wikidata_id] += 1
 
 
-print("N not nil " + str(c_not_nil))
-print("N nil " + str(c_nil))
+print("N not nil " + str(len(set_c_not_nil)))
+print("N nil " + str(len(set_c_nil)))
 
 # vv = list(c.values())
 # vv = sorted(vv)
