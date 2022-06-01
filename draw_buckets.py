@@ -62,9 +62,10 @@ for id, n in c.items():
         k = "1000+"
     if k not in buckets:
         buckets[k] = 0
-    buckets[k] +=1
+    buckets[k] += 1
 
 print(str(buckets))
+print(str(c))
 
 #
 # lists = sorted(buckets.items())
