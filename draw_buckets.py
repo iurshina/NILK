@@ -11,8 +11,10 @@ with open("all_mentions.json") as f:
     for l in f:
         line = json.loads(l)
         wikidata_id = line["wikidata_id"]
+        is_nil = line["nil"]
 
-        c[wikidata_id] += 1
+        if is_nil:
+            c[wikidata_id] += 1
 
 # vv = list(c.values())
 # vv = sorted(vv)
