@@ -8,7 +8,7 @@ import random
 # count stuff and check that we don't have both "nils" and "not nils"
 c = Counter()
 n_c = Counter()
-with open("all_mentions.json") as f, open("both.txt", "w") as out:
+with open("all_mention_01_06.json") as f, open("both_01_06.txt", "w") as out:
     for l in f:
         line = json.loads(l)
         wikidata_id = line["wikidata_id"]
@@ -22,6 +22,8 @@ with open("all_mentions.json") as f, open("both.txt", "w") as out:
             c[wikidata_id] += 1
             if nil_already:
                 out.write(wikidata_id + "\n")
+
+print("Finished counting")
 
 # split keeping the ratio
 buckets = {}
@@ -72,7 +74,9 @@ for v in buckets.values():
     val_ids.update(validate)
     test_ids.update(test)
 
-with open("test.json", "w") as test, open("train.json", "w") as train, open("valid.json", "w") as valid, open("all_mentions.json") as input:
+print("Starts writing")
+
+with open("test_01_06.jsonl", "w") as test, open("train_01_06.jsonl", "w") as train, open("valid_01_06.jsonl", "w") as valid, open("all_mention_01_06.json") as input:
     for l in input:
         line = json.loads(l)
         wikidata_id = line["wikidata_id"]

@@ -7,7 +7,7 @@ import numpy as np
 import math
 
 # c = Counter()
-# c_nil = Counter
+# c_nil = Counter()
 set_c_nil = set()
 set_c_not_nil = set()
 m_n = 0
@@ -73,8 +73,25 @@ print("N mentions nil " + str(m_n))
 #         buckets[k] = 0
 #     buckets[k] += 1
 #
-# print(str(buckets))
-# print(str(c))
+# print("Not nil " + str(buckets))
+# # print(str(c))
+#
+# buckets = {}
+# for id, n in c_nil.items():
+#     k = "1"
+#     if 1 < n < 5:
+#         k = "2 to 5"
+#     if 5 <= n < 100:
+#         k = "6 to 100"
+#     if 100 <= n < 1000:
+#         k = "101 to 1000"
+#     if 1000 <= n:
+#         k = "1000+"
+#     if k not in buckets:
+#         buckets[k] = 0
+#     buckets[k] += 1
+#
+# print("Nil " + str(buckets))
 
 #
 # lists = sorted(buckets.items())
