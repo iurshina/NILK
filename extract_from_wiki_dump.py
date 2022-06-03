@@ -1,13 +1,11 @@
 # based on: https://github.com/RaRe-Technologies/gensim/blob/develop/gensim/scripts/segment_wiki.py
 
 
-from gensim.corpora.wikicorpus import get_namespace, utils, RE_P16, filter_wiki, remove_markup, IGNORED_NAMESPACES
+from gensim.corpora.wikicorpus import get_namespace, RE_P16, filter_wiki, remove_markup, IGNORED_NAMESPACES
 import gensim.utils
 import re
 import json
 from tqdm import tqdm
-from functools import partial
-import multiprocessing
 import argparse
 
 from xml.etree import ElementTree
@@ -71,7 +69,6 @@ def segment(page_xml, nil_only=False, mapping=None, nils=None):
         mention_span = filtered[start:end]
 
         # [[a|b]] appears as "b" but links to page "a", thus: b https://en.wikipedia.org/wiki/Help:Link
-        # todo: more complicated cases?
         mention_span_parts = mention_span.split("|")
         if len(mention_span_parts) > 1:
             wikipedia_link = mention_span_parts[0]
@@ -82,7 +79,6 @@ def segment(page_xml, nil_only=False, mapping=None, nils=None):
 
         is_nil = False
         if wikipedia_link.lower() in nils.keys():
-            # take 500 character on each side... #todo: ???
             left_context = filtered[max(0, start - 500):start]
             right_context = filtered[end:min(end + 500, len(filtered))]
             left_context = remove_markup(left_context)
@@ -108,13 +104,14 @@ def segment(page_xml, nil_only=False, mapping=None, nils=None):
 
             mentions.append((mention_span, left_context + mention_span + right_context, len(left_context),
                              pageid, wikidata_id, False))
+            # making sure there is no intersection between NILs and linked entities
             if is_nil and wikidata_id == nil_wikidata_id:
                 print("Error: an item is both in NILs and linked items: " + mention_span + ", " + wikidata_id)
 
     return mentions
 
 
-def extract_mentions(mapping, nils_file, wiki_dump, workers, nil_only=False):
+def extract_mentions(mapping, nils_file, wiki_dump, nil_only=False):
     nils = {}
     with open(nils_file) as f:
         for l in f:
@@ -142,40 +139,25 @@ def extract_mentions(mapping, nils_file, wiki_dump, workers, nil_only=False):
 
                 yield mention
 
-        # pool = multiprocessing.Pool(processes)
-        #
-        # for group in tqdm(utils.chunkize(page_xmls, chunksize=10 * processes, maxsize=1), total=17_303_347/(10 * processes)):
-        #     for mentions in pool.map(partial(segment, nil_only=nil_only, mapping=wikidata_to_wikipedia, nils=nils), group):
-        #         for mention in mentions:
-        #             mention_span, context, offset, pageid, wikidata_id, is_nil = mention
-        #
-        #             mention = {"mention": mention_span, "offset": offset, "length": len(mention_span), "context": context,
-        #                        "wikipedia_page_id": pageid, "wikidata_id": wikidata_id, "nil": is_nil}
-        #
-        #             yield mention
-        #
-        # pool.terminate()
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    default_workers = max(1, multiprocessing.cpu_count() - 1)
     parser.add_argument('-m', '--mapping', default="2017_mapping_instance_not_subclass.tsv")
     parser.add_argument("-n", "--nils", default="2021_minus_2017_instance_not_sublass.txt")
     parser.add_argument('-f', '--file', help='Path to MediaWiki database dump (read-only).',
-                        default="../../data/enwiki-20170220-pages-articles.xml.bz2")
+                        default="enwiki-20170220-pages-articles.xml.bz2")
     parser.add_argument(
         '-o', '--output',
         help='Path to output file (stdout if not specified). If ends in .gz or .bz2, '
              'the output file will be automatically compressed (recommended!).',
-        default="all_mention_01_06.json")
+        default="all_mention_01_06_laptop.json")
     parser.add_argument('-x', "--nil_only", default=False)
 
     args = parser.parse_args()
 
     outfile = gensim.utils.open(args.output, 'wb')
 
-    mentions_stream = extract_mentions(args.mapping, args.nils, args.file, default_workers, args.nil_only)
+    mentions_stream = extract_mentions(args.mapping, args.nils, args.file, args.nil_only)
 
     for idx, mention in enumerate(mentions_stream):
         mention["id"] = idx

@@ -34,6 +34,7 @@ if __name__ == '__main__':
     with open(args.output_file, "w") as f:
         for id in nil_ids:
             enwiki = mmap[id]
+            # filers out some types but it's not strictly necessary since we only take into account Name/Article namespace
             if enwiki.startswith("Category:") or enwiki.startswith("Wikipedia:") or enwiki.startswith("Module:") \
                 or enwiki.startswith("Template:") or enwiki.startswith("Portal:"):
                 continue

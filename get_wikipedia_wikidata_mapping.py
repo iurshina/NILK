@@ -3,31 +3,6 @@ import argparse
 import gzip
 import json
 
-# {
-#       "property" : {
-#         "type" : "uri",
-#         "value" : "http://www.wikidata.org/entity/P31"
-#       },
-#       "propertyLabel" : {
-#         "xml:lang" : "en",
-#         "type" : "literal",
-#         "value" : "instance of"
-#       }
-# }
-
-# {
-#       "property" : {
-#         "type" : "uri",
-#         "value" : "http://www.wikidata.org/entity/P279"
-#       },
-#       "propertyLabel" : {
-#         "xml:lang" : "en",
-#         "type" : "literal",
-#         "value" : "subclass of"
-#       }
-#     }
-# }
-
 
 def get_mapping(wikidata_path, filter_claims):
     with gzip.open(wikidata_path, 'rb') as gf:
@@ -47,9 +22,7 @@ def get_mapping(wikidata_path, filter_claims):
 
             if filter_claims:
                 claims = obj["claims"]
-                # print(str(claims))
                 if "P279" in claims.keys():  # subclass
-                    # print("P279: " + str(claims["P279"]))
                     continue
 
                 if "P31" not in claims.keys():  # instance of

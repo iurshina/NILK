@@ -5,23 +5,21 @@ import random
 
 # 80, 10, 10
 
-# count stuff and check that we don't have both "nils" and "not nils"
+# count stuff
 c = Counter()
 n_c = Counter()
-with open("outputs/all_mention_01_06.json") as f, open("outputs/both_01_06.txt", "w") as out:
+with open("../outputs/all_mention_01_06.json") as f, open("../outputs/both_01_06.txt", "w") as out:
     for l in f:
         line = json.loads(l)
         wikidata_id = line["wikidata_id"]
         is_nil = line["nil"]
 
-        nil_already = False
         if is_nil:
             n_c[wikidata_id] += 1
             nil_already = True
         if not is_nil:
             c[wikidata_id] += 1
-            if nil_already:
-                out.write(wikidata_id + "\n")
+
 
 print("Finished counting")
 
@@ -76,8 +74,8 @@ for v in buckets.values():
 
 print("Starts writing")
 
-with open("test_01_06.jsonl", "w") as test, open("train_01_06.jsonl", "w") as train, open("valid_01_06.jsonl", "w") as valid, open(
-        "outputs/all_mention_01_06.json") as input:
+with open("test.jsonl", "w") as test, open("train.jsonl", "w") as train, open("valid.jsonl", "w") as valid, open(
+        "../outputs/all_mention_01_06.json") as input:
     for l in input:
         line = json.loads(l)
         wikidata_id = line["wikidata_id"]
