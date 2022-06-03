@@ -8,7 +8,7 @@ import random
 # count stuff and check that we don't have both "nils" and "not nils"
 c = Counter()
 n_c = Counter()
-with open("all_mention_01_06.json") as f, open("both_01_06.txt", "w") as out:
+with open("outputs/all_mention_01_06.json") as f, open("outputs/both_01_06.txt", "w") as out:
     for l in f:
         line = json.loads(l)
         wikidata_id = line["wikidata_id"]
@@ -76,7 +76,8 @@ for v in buckets.values():
 
 print("Starts writing")
 
-with open("test_01_06.jsonl", "w") as test, open("train_01_06.jsonl", "w") as train, open("valid_01_06.jsonl", "w") as valid, open("all_mention_01_06.json") as input:
+with open("test_01_06.jsonl", "w") as test, open("train_01_06.jsonl", "w") as train, open("valid_01_06.jsonl", "w") as valid, open(
+        "outputs/all_mention_01_06.json") as input:
     for l in input:
         line = json.loads(l)
         wikidata_id = line["wikidata_id"]
