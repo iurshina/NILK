@@ -28,7 +28,7 @@ $ python extract_from_wiki_dump.py -m wikdata_wikipedia_mapping -n nil_mapping -
 $ python extract_from_wiki_dump.py -n 2021_minus_2017_instance_not_sublass.txt -f ../../data/enwiki-20170220-pages-articles.xml.bz2 -o nil_mentions.json -x True
 ```
 
-Accepted to CIKM 2022, short/resource paper.
+### Accepted to CIKM 2022, short/resource paper.
 
 Abstract of the paper:
 
