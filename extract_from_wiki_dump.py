@@ -79,23 +79,18 @@ def segment(page_xml, nil_only=False, mapping=None, nils=None):
 
         is_nil = False
         if wikipedia_link.lower() in nils.keys():
-            left_context = filtered[max(0, start - 500):start]
-            right_context = filtered[end:min(end + 500, len(filtered))]
-            left_context = remove_markup(left_context)
-            right_context = remove_markup(right_context)
+            left_context, right_context = extract_context(filtered, start, end)
 
             if len(left_context) < 10 and len(right_context) < 10:
                 continue
 
             nil_wikidata_id = nils[wikipedia_link.lower()]
+
             mentions.append((mention_span, left_context + mention_span + right_context, len(left_context),
                              pageid, nil_wikidata_id, True))
             is_nil = True
         if not nil_only and wikipedia_link.lower() in mapping.keys():
-            left_context = filtered[max(0, start - 500):start]
-            right_context = filtered[end:min(end + 500, len(filtered))]
-            left_context = remove_markup(left_context)
-            right_context = remove_markup(right_context)
+            left_context, right_context = extract_context(filtered, start, end)
 
             if len(left_context) < 10 and len(right_context) < 10:
                 continue
@@ -109,6 +104,20 @@ def segment(page_xml, nil_only=False, mapping=None, nils=None):
                 print("Error: an item is both in NILs and linked items: " + mention_span + ", " + wikidata_id)
 
     return mentions
+
+
+def extract_context(filtered: str, start: int, end: int):
+    # extract extra context so that after the markup removal, we still had enough
+    left_context = filtered[max(0, start - 1000):start]
+    right_context = filtered[end:min(end + 1000, len(filtered))]
+
+    left_context = remove_markup(left_context)
+    right_context = remove_markup(right_context)
+
+    left_context = left_context[-500:]
+    right_context = right_context[:500]
+
+    return left_context, right_context
 
 
 def extract_mentions(mapping, nils_file, wiki_dump, nil_only=False):
@@ -150,7 +159,7 @@ if __name__ == '__main__':
         '-o', '--output',
         help='Path to output file (stdout if not specified). If ends in .gz or .bz2, '
              'the output file will be automatically compressed (recommended!).',
-        default="all_mention_01_06_laptop.json")
+        default="all_mentions.json")
     parser.add_argument('-x', "--nil_only", default=False)
 
     args = parser.parse_args()
