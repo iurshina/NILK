@@ -8,7 +8,7 @@ import random
 # count stuff
 c = Counter()
 n_c = Counter()
-with open("../outputs/all_mention_01_06.json") as f, open("../outputs/both_01_06.txt", "w") as out:
+with open("../outputs/all_mentions_3_03_2023.json") as f:
     for l in f:
         line = json.loads(l)
         wikidata_id = line["wikidata_id"]
@@ -74,8 +74,8 @@ for v in buckets.values():
 
 print("Starts writing")
 
-with open("test.jsonl", "w") as test, open("train.jsonl", "w") as train, open("valid.jsonl", "w") as valid, open(
-        "../outputs/all_mention_01_06.json") as input:
+with open("test_3_03_2023.jsonl", "w") as test, open("train_3_03_2023.jsonl", "w") as train, open("valid_3_03_2023.jsonl", "w") as valid, open(
+        "../outputs/all_mentions_3_03_2023.json") as input:
     for l in input:
         line = json.loads(l)
         wikidata_id = line["wikidata_id"]
